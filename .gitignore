@@ -1,9 +1,11 @@
 bin/
 obj/
+.idea/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
-Resources/
+*.yml
+*.xml
+*.xsd
 *.config
 *.csproj
-*.sln
