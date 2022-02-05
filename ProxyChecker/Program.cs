@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using ProxyChecker.Models;
+using ProxyChecker.Utils;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -10,6 +13,7 @@ namespace ProxyChecker
 {
     internal class Program
     {
+        [STAThread]
         public static void Main(string[] args)
         {
             #region Pre Init
@@ -19,7 +23,7 @@ namespace ProxyChecker
             Console.BufferWidth = Console.WindowWidth;
             Console.CursorVisible = false;
             Console.Title = "";
-            
+
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(PascalCaseNamingConvention.Instance) // naming convention using capital letters
                 .Build();
@@ -48,11 +52,20 @@ namespace ProxyChecker
 
             // Looks like we're properly setting up the thread pool
             // By default the maximum threads amount is equal to your cpu's threads
+            // And it's quite retarded to pretend having multi-threaded shit without setting up the threadpool
             ThreadPool.GetAvailableThreads(out int workerThreads, out int completionPortThreads);
             ThreadPool.SetMinThreads(config.Checker.Threads + 10, completionPortThreads);
 
             #endregion
+            
+            #region Load Proxies
 
+            var proxies = File
+                .ReadLines(FileDialogUtils.SelectFile())
+                .ToList();
+
+            #endregion
+            
             Thread.Sleep(-1);
         }
     }
