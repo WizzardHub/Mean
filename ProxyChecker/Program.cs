@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using ProxyChecker.Models;
 using ProxyChecker.Utils;
@@ -19,10 +20,13 @@ namespace ProxyChecker
             #region Pre Init
 
             Console.WindowWidth = 80;
+            Console.OutputEncoding = Encoding.Unicode;
             Console.BufferHeight = Console.WindowHeight;
             Console.BufferWidth = Console.WindowWidth;
             Console.CursorVisible = false;
             Console.Title = "";
+            
+            ConsoleUtils.SetCurrentFont("Consolas", 16);
 
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(PascalCaseNamingConvention.Instance) // naming convention using capital letters
@@ -60,12 +64,16 @@ namespace ProxyChecker
             
             #region Load Proxies
 
+            ConsoleUtils.Log(LogType.Info, "Load your proxies ...");
+            
             var proxies = File
                 .ReadLines(FileDialogUtils.SelectFile())
                 .ToList();
 
-            #endregion
+            ConsoleUtils.Log(LogType.Info, $"Successfully loaded {proxies.Count} proxies !");
             
+            #endregion
+
             Thread.Sleep(-1);
         }
     }
