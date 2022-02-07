@@ -43,20 +43,38 @@ namespace ProxyChecker.Utils
 
         public static void Log(LogType type, string message)
         {
+            string format = default;
+            Formatter[] formatters = default;
+            
             switch (type)
             {
                 case LogType.Info:
-                    string format = "[{0}] {1}";
-                    Formatter[] formatters = new[]
+                    format = "[{0}] {1}";
+                    formatters = new[]
                     {
-                        new Formatter("!", Color.PaleGreen),
+                        new Formatter("@", Color.PaleGreen),
                         new Formatter(message, Color.PaleGreen)
                     };
-                    Console.WriteLineFormatted(format, Color.DimGray, formatters);
                     break;
-                default:
+                case LogType.Warning:
+                    format = "[{0}] {1}";
+                    formatters = new[]
+                    {
+                        new Formatter("$", Color.PaleGoldenrod),
+                        new Formatter(message, Color.PaleGoldenrod)
+                    };
+                    break;
+                case LogType.Error:
+                    format = "[{0}] {1}";
+                    formatters = new[]
+                    {
+                        new Formatter("!", Color.PaleVioletRed),
+                        new Formatter(message, Color.PaleVioletRed)
+                    };
                     break;
             }
+            
+            Console.WriteLineFormatted(format, Color.DimGray, formatters);
         }
         
         public static FontInfo[] SetCurrentFont(string font, short fontSize = 0)
