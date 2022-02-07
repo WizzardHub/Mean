@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using Leaf.xNet;
+using MaxMind.GeoIP2;
+using ProxyChecker.Extensions;
 using ProxyChecker.Models;
 using ProxyChecker.Utils;
 using YamlDotNet.Serialization;
@@ -72,6 +77,37 @@ namespace ProxyChecker
 
             ConsoleUtils.Log(LogType.Info, $"Successfully loaded {proxies.Count} proxies !");
             
+            #endregion
+
+            #region Checking Proxy
+
+            Parallel.ForEach(proxies, new ParallelOptions { MaxDegreeOfParallelism = config.Checker.Threads }, proxy =>
+            {
+                try
+                {
+                    using (var req = new HttpRequest()
+                        .UseProxy(proxy, config.Proxy.Type, config.Proxy.TimeOut))
+                    {
+                        var res = req.Get("http://www.proxy-listen.de/azenv.php");
+                        if (res.IsOK)
+                        {
+                            string country;
+                            using (var reader = new DatabaseReader("GeoLite2.mmdb"))
+                            {
+                                var response = reader.Country(proxy.Split(':')[0]);
+                                country = response.Country.Name;
+                            }
+                            
+                            ConsoleUtils.Log(LogType.Info, $"{proxy} ({country})");
+                        }
+                    }
+                }
+                catch (HttpException e)
+                {
+                    ConsoleUtils.Log(LogType.Warning, $"{proxy} (Timed Out)");
+                }
+            });
+
             #endregion
 
             Thread.Sleep(-1);
