@@ -22,4 +22,4 @@
 <br>
 <h2>Screenshots</h2>
 <span><b>Mean's Stylish Gui</b></span>
-<img src="https://i.imgur.com/OlY0VGL.png">
+<img src="https://i.imgur.com/tatCdSa.gif">
