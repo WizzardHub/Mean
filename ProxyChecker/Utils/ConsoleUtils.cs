@@ -147,7 +147,7 @@ namespace ProxyChecker.Utils
                 for (int i = 0; i < line.Length; i++)
                 {
                     var color = Color.FromArgb(r, g, b);
-                    WriteCentered(line[i].ToString(), color, i, 4);
+                    WriteCentered(line[i].ToString(), color, i + 3, 4);
                 }
                 Console.Out.WriteLineAsync();
                 buffer += 20;
