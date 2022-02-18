@@ -128,6 +128,8 @@ namespace ProxyChecker.Utils
             }
         }
 
+        // Logo
+        
         public static void WriteLogo()
         {
             var lines = new[]
