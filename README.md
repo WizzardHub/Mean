@@ -23,3 +23,7 @@
 <h2>Screenshots</h2>
 <span><b>Mean's Stylish Gui</b></span>
 <img src="https://i.imgur.com/tatCdSa.gif">
+<br>
+<h2>Download</h2>
+<span>Mean is currently Windows Only</span>
+<a href="https://github.com/WizzardHub/Mean/releases">Mean ProxyChecker</a>
