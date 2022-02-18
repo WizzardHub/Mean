@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Colorful;
 using Console = Colorful.Console;
@@ -27,6 +29,10 @@ namespace ProxyChecker.Utils
 
         private static readonly IntPtr ConsoleOutputHandle = GetStdHandle(StandardOutputHandle);
 
+        
+        [DllImport("shlwapi.dll")]
+        public static extern int ColorHLSToRGB(int h, int l, int s);
+        
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         public struct FontInfo
         {
@@ -103,7 +109,7 @@ namespace ProxyChecker.Utils
                 {
                     var ex = Marshal.GetLastWin32Error();
                     Console.WriteLine("Set error " + ex);
-                    throw new System.ComponentModel.Win32Exception(ex);
+                    throw new Win32Exception(ex);
                 }
 
                 FontInfo after = new FontInfo
@@ -118,8 +124,96 @@ namespace ProxyChecker.Utils
             {
                 var er = Marshal.GetLastWin32Error();
                 Console.WriteLine("Get error " + er);
-                throw new System.ComponentModel.Win32Exception(er);
+                throw new Win32Exception(er);
             }
+        }
+
+        public static void WriteLogo()
+        {
+            var lines = new[]
+            {
+                "",
+                @"  /\/\   ___  __ _ _ __  ",
+                @" /    \ / _ \/ _` | '_ \ ",
+                @"/ /\/\ \  __/ (_| | | | |",
+                @"\/    \/\___|\__,_|_| |_|",
+                ""
+            };
+            
+            int buffer = 0;
+            foreach (var line in lines)
+            {
+                int r = 120 + buffer, g = 30 + buffer, b = 80 + buffer;
+                for (int i = 0; i < line.Length; i++)
+                {
+                    var color = Color.FromArgb(r, g, b);
+                    WriteCentered(line[i].ToString(), color, i, 4);
+                }
+                Console.Out.WriteLineAsync();
+                buffer += 20;
+            }
+        }
+
+        public static void ClearLine()
+        {
+            Console.Out.FlushAsync();
+            Console.CursorTop = Math.Max(0, Console.CursorTop - 1);
+            Console.CursorLeft = 0;
+            Console.Out.WriteAsync(new string(' ', Console.WindowWidth));
+            Console.CursorTop = Math.Max(0, Console.CursorTop - 1);
+        }
+
+        public static void ClearLines(int amount)
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                ClearLine();
+            }
+        }
+
+        public static void Clear()
+        {
+            Console.CursorTop = 0;
+            Console.Out.WriteLineAsync(new string(' ', Console.WindowWidth * Console.WindowHeight));
+            Console.CursorTop = 0;
+            
+            Console.Out.FlushAsync();
+        }
+        
+        public static void WriteLineCentered(string value, Color color = default)
+        {
+            Console.CursorLeft = Console.WindowWidth / 2 - value.Length / 2;
+            Console.WriteLine(value, color);
+            Console.CursorLeft = 0;
+        }
+        
+        public static void WriteLineCentered(string value, Formatter[] formatters)
+        {
+            
+            int formatterLength = formatters
+                .ToList()
+                .Select(x => x
+                    .Target
+                    .ToString()
+                    .Length)
+                .Sum();
+
+            int targetLength = value
+                .Length - value
+                .ToList()
+                .FindAll(x => x.Equals('{'))
+                .Count * 3;
+
+            Console.CursorLeft = Console.WindowWidth / 2 - targetLength / 2 - formatterLength / 2;
+            Console.WriteLineFormatted(value, Color.Gray, formatters);
+            Console.CursorLeft = 0;
+        }
+        
+        public static void WriteCentered(string value, Color color = default, int index = default, int factor = 2)
+        {
+            Console.CursorLeft = Console.WindowWidth / factor - value.Length / factor + index;
+            Console.Write(value, color);
+            Console.CursorLeft = 0;
         }
         
     }
