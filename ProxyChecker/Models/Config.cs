@@ -17,5 +17,6 @@ namespace ProxyChecker.Models
     public class Checker
     {
         public int Threads { get; private set; }
+        public bool KeepAlive { get; private set; }
     }
 }
